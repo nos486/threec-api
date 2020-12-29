@@ -1,30 +1,28 @@
 import express from "express"
 import mongoose from "mongoose";
-import User from "./models/user.js"
+import bodyParser from "body-parser"
+import cors from "cors"
+import "./db.js"
 
-import indexRouter from "./routes/index.js"
-import loginRouter from "./routes/login.js"
+import apiRouter from "./api/api.js"
 
 const app = express()
 const port = 3000
-const eraseDatabaseOnSync = false;
 
-app.use('/', indexRouter);
-app.use('/login', loginRouter);
+//json body parser
+app.use(bodyParser.json())
+app.use(cors({
+    exposedHeaders: 'Key',
+}))
 
-mongoose.connect("mongodb://127.0.0.1/apiService", {useNewUrlParser: true, useUnifiedTopology: true,useCreateIndex:true}).then(async () =>{
 
-    if (eraseDatabaseOnSync) {
-        await Promise.all([
-            models.User.deleteMany({}),
-            models.Message.deleteMany({}),
-        ]);
-    }
+//routes
+app.use('/api/v1', apiRouter);
 
-    app.listen(port, () => {
-        console.log(`Example app listening at http://localhost:${port}`)
-    })
-});
+app.listen(port, () => {
+    console.log(`Example app listening at http://localhost:${port}`)
+})
+
 
 
 
