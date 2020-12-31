@@ -1,7 +1,9 @@
-import mongoose from 'mongoose';
-import md5 from "md5"
-import jwt from "jsonwebtoken";
-import config from "../config.js";
+const mongoose =require( 'mongoose');
+const md5 =require( "md5")
+const jwt =require( "jsonwebtoken");
+const config =require( "../config");
+const bcrypt = require("bcrypt");
+const {ROLE} = require("./enums")
 
 
 /**
@@ -12,7 +14,7 @@ import config from "../config.js";
  * @property {Object} data
  */
 
-const userSchema = new mongoose.Schema(
+const schema = new mongoose.Schema(
     {
         username: {
             type: String,
@@ -22,8 +24,6 @@ const userSchema = new mongoose.Schema(
         email :{
             type : String,
             unique : true,
-            sparse: true,
-            required: true,
         },
         is_email_valid :{
             type:Boolean,
@@ -31,8 +31,6 @@ const userSchema = new mongoose.Schema(
         },
         phone_number :{
             type : String,
-            unique : true,
-            sparse: true,
         },
         is_phone_number_valid :{
             type:Boolean,
@@ -44,13 +42,18 @@ const userSchema = new mongoose.Schema(
         },
         is_admin :{
             type:Boolean,
-            default : false
+            default: false
         },
-        first_name :{
-            type : String,
+        role: {
+            type: String,
+            default : ROLE.USER,
+            required: true
         },
-        last_name :{
-            type : String,
+        first_name: {
+            type: String,
+        },
+        last_name: {
+            type: String,
         },
         about :{
             type : String,
@@ -59,70 +62,44 @@ const userSchema = new mongoose.Schema(
     { timestamps: true },
 );
 
-userSchema.methods.findByLogin = async function (login) {
-    let user = await this.findOne({
-        username: login,
-    });
-
-    if (!user) {
-        user = await this.findOne({ email: login });
+schema.set('toJSON', {
+    virtuals: true,
+    versionKey: false,
+    transform: function (doc, ret) {
+        // remove these props when object is serialized
+        delete ret._id;
+        delete ret.password;
     }
-    return user;
-};
+});
 
-const User = mongoose.model('User', userSchema);
+const User = mongoose.model('User', schema);
 
-User.createUser = async function(username,email,password){
-    if ((await User.findUserByUsername(username)).type === "success"){
-        return {type:"error",text:"user exist"}
-    }
 
-    if ((await User.findUserByEmail(email)).type === "success"){
-        return {type:"error",text:"user exist"}
-    }
 
-    let user = new User({
-        username: username,
-        email : email,
-        password : md5(password),
-        phone_number : null
-    });
-
-    await user.save();
-    return {type:"success",data:user}
-
-}
-
-/**
- *
- * @param {Object} user
- * @returns {Promise<Object>}
- */
 User.findUser  = async function(user){
-    try {
-        let users =await User.find(user).exec()
-        if (users.length === 0){
-            return {type:"error",text:"user not find",}
-        }else if(users.length === 1){
-            return {type:"success",data:users[0]}
-        }else {
-            return {type:"error",text:"multiple user find"}
-        }
-    }catch (err){
-        return {type:"error",text:err}
+
+    let users =await User.find(user).exec()
+
+    if (users.length === 0){
+        throw "User not find"
+    }else if(users.length === 1){
+        return users[0]
+    }else {
+        throw "Multiple user find"
     }
+
 }
 
-User.checkUser = async function(user,password){
+User.checkUser = async function(user, password){
     return  User.findUser(user).then((result)=>{
         if(result.type === "success"){
-            if(result.data.password === md5(password)){
+            if(bcrypt.compareSync(password, result.data.password)){
                 return result
             }else {
-                return {type:"error",text:"wrong password"}
+                throw "Wrong password"
             }
         }else {
-            return {type:"error",text:"user not find"}
+            throw "User not find"
         }
     })
 }
@@ -152,9 +129,8 @@ User.getTokenByUserID  = function(userId){
  * @param {string} password
  * @returns {Promise<boolean>}
  */
-User.checkUserByUsername  = async function(username,password){
+User.checkUserByUsername  = async function(username, password){
     return await User.checkUser({username :  username},password)
 }
 
-
-export default User;
+module.exports = User;
