@@ -20,12 +20,10 @@ function authorize(roles = []) {
             const user = await db.User.findById(req.user.id);
 
             if (!user || (roles.length && !roles.includes(user.role))) {
-                // user no longer exists or role not authorized
-                return res.status(401).json({ message: 'Unauthorized' });
+                return res.status(403).json({ message: 'Forbidden' });
             }
 
-            // authentication and authorization successful
-            req.user.role = user.role;
+            req.user = user
             const refreshTokens = await db.RefreshToken.find({ user: user.id });
             req.user.ownsToken = token => !!refreshTokens.find(x => x.token === token);
             next();

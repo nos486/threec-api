@@ -8,18 +8,16 @@ module.exports = {
     createUser,
     authenticate,
     refreshToken,
-    revokeToken,
+    deleteRefreshToken,
     getAll,
-    getById,
-    getRefreshTokens
 }
 
 async function createUser(username, email, password){
-    if ((await db.User.findUserByUsername(username)).type === "success"){
+    if (await db.User.hasUsername(username)){
         throw "Username exist"
     }
 
-    if ((await db.User.findUserByEmail(email)).type === "success"){
+    if (await db.User.hasEmail(email)){
         throw "Email exist"
     }
 
@@ -27,7 +25,6 @@ async function createUser(username, email, password){
         username: username,
         email : email,
         password : bcrypt.hashSync(password, 10),
-        phone_number : null
     });
 
     await user.save();
@@ -43,48 +40,39 @@ async function authenticate({ username, password, ipAddress }) {
 
     // authentication successful so generate jwt and refresh tokens
     const jwtToken = generateJwtToken(user);
+
+    await db.RefreshToken.findOneAndDelete({user: user.id})
     const refreshToken = generateRefreshToken(user, ipAddress);
-    console.log(jwtToken)
-    // save refresh token
     await refreshToken.save();
 
     return {
-        ...basicDetails(user),
+        ...user.toJSON(),
         jwtToken,
         refreshToken: refreshToken.token
     };
 }
 
 async function refreshToken({ token, ipAddress }) {
-    const refreshToken = await getRefreshToken(token);
+    const refreshToken = await db.RefreshToken.getRefreshTokenByToken(token);
     const { user } = refreshToken;
 
-    // replace old refresh token with a new one and save
+    await db.RefreshToken.findOneAndDelete({user: user.id})
     const newRefreshToken = generateRefreshToken(user, ipAddress);
-    refreshToken.revoked = Date.now();
-    refreshToken.revokedByIp = ipAddress;
-    refreshToken.replacedByToken = newRefreshToken.token;
-    await refreshToken.save();
     await newRefreshToken.save();
 
-    // generate new jwt
-    const jwtToken = generateJwtToken(user);
+    const newJwtToken = generateJwtToken(user);
 
     // return basic details and tokens
     return {
-        ...basicDetails(user),
-        jwtToken,
+        ...user.toJSON(),
+        jwtToken : newJwtToken,
         refreshToken: newRefreshToken.token
     };
 }
 
-async function revokeToken({ token, ipAddress }) {
-    const refreshToken = await getRefreshToken(token);
-
-    // revoke token and save
-    refreshToken.revoked = Date.now();
-    refreshToken.revokedByIp = ipAddress;
-    await refreshToken.save();
+async function deleteRefreshToken(token) {
+    const refreshToken = await db.RefreshToken.getRefreshTokenByToken(token)
+    refreshToken.delete()
 }
 
 async function getAll() {
@@ -92,38 +80,12 @@ async function getAll() {
     return users.map(x => basicDetails(x));
 }
 
-async function getById(id) {
-    const user = await getUser(id);
-    return basicDetails(user);
-}
-
-async function getRefreshTokens(userId) {
-    // check that user exists
-    await getUser(userId);
-
-    // return refresh tokens for user
-    const refreshTokens = await db.RefreshToken.find({ user: userId });
-    return refreshTokens;
-}
-
 // helper functions
 
-async function getUser(id) {
-    if (!db.isValidId(id)) throw 'User not found';
-    const user = await db.User.findById(id);
-    if (!user) throw 'User not found';
-    return user;
-}
-
-async function getRefreshToken(token) {
-    const refreshToken = await db.RefreshToken.findOne({ token }).populate('user');
-    if (!refreshToken || !refreshToken.isActive) throw 'Invalid token';
-    return refreshToken;
-}
 
 function generateJwtToken(user) {
     // create a jwt token containing the user id that expires in 15 minutes
-    return jwt.sign({ sub: user.id, id: user.id }, config.secret, { expiresIn: '15m' });
+    return jwt.sign({ id: user.id }, config.secret, { expiresIn: '15m' });
 }
 
 function generateRefreshToken(user, ipAddress) {
@@ -136,7 +98,3 @@ function generateRefreshToken(user, ipAddress) {
     });
 }
 
-function basicDetails(user) {
-    const { id, email, username, role } = user;
-    return { id, email, username, role };
-}

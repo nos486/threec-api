@@ -25,14 +25,19 @@ const schema = new mongoose.Schema(
             type : String,
             unique : true,
         },
-        is_email_valid :{
+        isEailValid :{
             type:Boolean,
             default : false
         },
-        phone_number :{
-            type : String,
+        areaCode :{
+            type:Number
         },
-        is_phone_number_valid :{
+        phoneNumber :{
+            type : String,
+            unique : true,
+            sparse: true,
+        },
+        isPhoneNumberValid :{
             type:Boolean,
             default : false
         },
@@ -40,19 +45,15 @@ const schema = new mongoose.Schema(
             type : String,
             required: true,
         },
-        is_admin :{
-            type:Boolean,
-            default: false
-        },
         role: {
             type: String,
             default : ROLE.USER,
             required: true
         },
-        first_name: {
+        firstName: {
             type: String,
         },
-        last_name: {
+        lastName: {
             type: String,
         },
         about :{
@@ -75,62 +76,39 @@ schema.set('toJSON', {
 const User = mongoose.model('User', schema);
 
 
-
-User.findUser  = async function(user){
-
-    let users =await User.find(user).exec()
-
-    if (users.length === 0){
-        throw "User not find"
-    }else if(users.length === 1){
-        return users[0]
-    }else {
-        throw "Multiple user find"
-    }
-
+User.getUserById  = async function(id, fullDetails = false) {
+    if (!User.isValidId(id)) throw 'User not found';
+    const user = await User.findById(id);
+    if (!user) throw 'User not found';
+    return fullDetails ? user : basicDetails(user);
 }
 
-User.checkUser = async function(user, password){
-    return  User.findUser(user).then((result)=>{
-        if(result.type === "success"){
-            if(bcrypt.compareSync(password, result.data.password)){
-                return result
-            }else {
-                throw "Wrong password"
-            }
-        }else {
-            throw "User not find"
-        }
-    })
+User.getUserByUsername  = async function(username, fullDetails = false) {
+    const user = await User.findOne({username});
+    if (!user) throw 'User not found';
+    return fullDetails ? user : basicDetails(user);
 }
 
-User.findUserByUsername  = async function(username){
-    return await User.findUser({username :  username})
+User.hasUsername = async function(username){
+    return !!(await User.findOne({username}))
 }
 
-/**
- *
- * @param email
- * @returns {Promise<DBResult>}
- */
-User.findUserByEmail  = async function(email){
-    return await User.findUser({email :  email})
+User.hasEmail = async function(email){
+    return !!(await User.findOne({email}))
 }
 
-User.getTokenByUserID  = function(userId){
-    return jwt.sign({id:userId}, config.secret, {
-        expiresIn: 86400 // expires in 24 hours
-    });
+User.getUserByEmail  = async function(email, fullDetails = false) {
+    const user = await User.findOne({email});
+    if (!user) throw 'User not found';
+    return fullDetails ? user : basicDetails(user);
 }
 
-/**
- *
- * @param {string} username
- * @param {string} password
- * @returns {Promise<boolean>}
- */
-User.checkUserByUsername  = async function(username, password){
-    return await User.checkUser({username :  username},password)
+
+//helpers
+
+function basicDetails(user) {
+    const { id, email, username, role } = user;
+    return { id, email, username, role };
 }
 
 module.exports = User;

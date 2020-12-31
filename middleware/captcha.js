@@ -20,10 +20,10 @@ function generate(req,res,next){
 }
 
 function check(req,res,next) {
-    let v = cache.get(req.body.captcha_key)
+    let v = cache.get(req.body.captchaKey)
     if (v !== null){
         if(v.toLowerCase() === req.body.captcha.toLowerCase()){
-            cache.del(req.body.captcha_key)
+            cache.del(req.body.captchaKey)
             next()
         }else {
             throw "Wrong captcha"

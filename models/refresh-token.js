@@ -6,9 +6,6 @@ const schema = new mongoose.Schema({
     expires: Date,
     created: { type: Date, default: Date.now },
     createdByIp: String,
-    revoked: Date,
-    revokedByIp: String,
-    replacedByToken: String
 });
 
 schema.virtual('isExpired').get(function () {
@@ -30,4 +27,17 @@ schema.set('toJSON', {
     }
 });
 
-module.exports = mongoose.model('RefreshToken', schema);
+const RefreshToken = mongoose.model('RefreshToken', schema);
+
+RefreshToken.getRefreshTokenByToken = async function (token) {
+    const refreshToken = await RefreshToken.findOne({token}).populate('user');
+    if (!refreshToken) throw 'Invalid token';
+    return refreshToken;
+}
+
+RefreshToken.getRefreshTokenByUserId = async function (userId) {
+    return RefreshToken.RefreshToken.findOne({user: userId}).populate('user');
+}
+
+
+module.exports = RefreshToken

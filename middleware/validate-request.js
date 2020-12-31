@@ -8,11 +8,13 @@ function validateRequest(req, next, schema) {
     if (error) {
         // next(`Validation error: ${error.details.map(x => x.message).join(', ')}`);
 
-        let errList = []
-        error.details.forEach((err)=>{
-            errList.push({"message":err.message})
-        })
-        next(errList)
+        next(error.details[0]);
+
+        // let errList = []
+        // error.details.forEach((err)=>{
+        //     errList.push({"message":err.message})
+        // })
+        // next(errList)
 
     } else {
         req.body = value;
