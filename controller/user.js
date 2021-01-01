@@ -77,7 +77,7 @@ async function deleteRefreshToken(token) {
 
 async function getAll() {
     const users = await db.User.find();
-    return users.map(x => basicDetails(x));
+    return users;
 }
 
 // helper functions
