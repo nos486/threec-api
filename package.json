@@ -20,6 +20,7 @@
     "md5": "^2.3.0",
     "memory-cache": "^0.2.0",
     "mongoose": "^5.11.8",
+    "socket.io": "^3.0.4",
     "svg-captcha": "^1.4.0",
     "swagger-ui-express": "^4.1.6",
     "uuid": "^8.3.2"

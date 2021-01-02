@@ -25,7 +25,7 @@ const schema = new mongoose.Schema(
             type : String,
             unique : true,
         },
-        isEailValid :{
+        isEmailValid :{
             type:Boolean,
             default : false
         },
@@ -69,6 +69,7 @@ schema.set('toJSON', {
     transform: function (doc, ret) {
         // remove these props when object is serialized
         delete ret._id;
+        delete ret.updatedAt
         delete ret.password;
     }
 });

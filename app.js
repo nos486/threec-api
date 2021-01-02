@@ -2,9 +2,10 @@ const express = require("express")
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser")
 const cors = require("cors")
-require("./db")
+const db = require("./db")
 const apiRouter = require("./route/index")
 const errorHandler = require("./middleware/error-handler");
+const socket = require('socket.io')
 
 
 const app = express()
@@ -19,21 +20,34 @@ app.use(cors({
     exposedHeaders: 'Key',
 }))
 
+app.use( '/static',express.static('public'))
 
 //routes
 app.use('/api/v1', apiRouter);
+
 
 // global error handler
 app.use(errorHandler);
 
 
-app.listen(port, () => {
+const server = app.listen(port, () => {
     console.log(`Example app listening at http://localhost:${port}`)
 })
 
+const io = socket(server,{
+    cors: {
+        origin: (origin, callback) => callback(null, true),
+        credentials: true
+    }
+});
 
+io.on('connection', (socket) => {
+    console.log('a user connected');
+    socket.on('disconnect', () => {
+        console.log('user disconnected');
+    });
 
-
-
-
-
+    socket.on('chat message', (msg) => {
+        console.log('message: ' + msg);
+    });
+});
