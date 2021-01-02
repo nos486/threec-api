@@ -5,8 +5,8 @@ const cors = require("cors")
 const db = require("./db")
 const apiRouter = require("./route/index")
 const errorHandler = require("./middleware/error-handler");
-const socket = require('socket.io')
-
+const socketIo = require('socket.io')
+const initListeners = require("./listeners");
 
 const app = express()
 const port = 3000
@@ -34,20 +34,12 @@ const server = app.listen(port, () => {
     console.log(`Example app listening at http://localhost:${port}`)
 })
 
-const io = socket(server,{
+let io = socketIo(server,{
     cors: {
         origin: (origin, callback) => callback(null, true),
         credentials: true
     }
 });
 
-io.on('connection', (socket) => {
-    console.log('a user connected');
-    socket.on('disconnect', () => {
-        console.log('user disconnected');
-    });
+initListeners(io)
 
-    socket.on('chat message', (msg) => {
-        console.log('message: ' + msg);
-    });
-});

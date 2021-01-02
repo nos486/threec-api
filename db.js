@@ -11,6 +11,7 @@ module.exports = {
     ...enums,
     User: require('./models/user'),
     RefreshToken: require('./models/refresh-token'),
+    Chat: require('./models/chat'),
     isValidId
 };
 
