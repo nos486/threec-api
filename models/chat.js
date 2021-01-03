@@ -43,6 +43,7 @@ schema.set('toJSON', {
     transform: function (doc, ret) {
         // remove these props when object is serialized
         delete ret.updatedAt
+        delete ret._id
     }
 });
 

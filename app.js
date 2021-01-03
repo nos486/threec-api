@@ -6,7 +6,7 @@ const db = require("./db")
 const apiRouter = require("./route/index")
 const errorHandler = require("./middleware/error-handler");
 const socketIo = require('socket.io')
-const initListeners = require("./listeners");
+const initSocket = require("./socket");
 
 const app = express()
 const port = 3000
@@ -41,5 +41,5 @@ let io = socketIo(server,{
     }
 });
 
-initListeners(io)
+initSocket(io)
 

@@ -43,6 +43,7 @@ function refreshTokenSchema(req, res, next) {
     validateRequest(req, next, schema);
 }
 
+
 function refreshToken(req, res, next) {
     const {token} = req.body;
     const ipAddress = req.ip;
@@ -52,6 +53,7 @@ function refreshToken(req, res, next) {
         })
         .catch(next);
 }
+
 
 function revokeTokenSchema(req, res, next) {
     const schema = Joi.object({

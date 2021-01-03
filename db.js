@@ -12,6 +12,7 @@ module.exports = {
     User: require('./models/user'),
     RefreshToken: require('./models/refresh-token'),
     Chat: require('./models/chat'),
+    Message: require('./models/message'),
     isValidId
 };
 

@@ -1,4 +1,4 @@
-const config = require("./../config")
+const {secret} = require("./../config")
 const db = require('./../db')
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
@@ -85,7 +85,7 @@ async function getAll() {
 
 function generateJwtToken(user) {
     // create a jwt token containing the user id that expires in 15 minutes
-    return jwt.sign({ id: user.id }, config.secret, { expiresIn: '15m' });
+    return jwt.sign({ id: user.id }, secret, { expiresIn: '15m' });
 }
 
 function generateRefreshToken(user, ipAddress) {
