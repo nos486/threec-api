@@ -9,7 +9,7 @@ function messageHandler(socket, next) {
         if (error) {
             next(error);
         }else {
-            messageController.getMessages(socket.userId, value.chatId).then((messages) => {
+            messageController.getMessages(socket.userId, value.chat).then((messages) => {
                 socket.emit("newMessages", messages);
             });
         }
@@ -23,8 +23,8 @@ function messageHandler(socket, next) {
             next(error);
         }else {
             messageController.newMessage({author: socket.userId, ...value}).then((message) => {
-                console.log(message.chatId) //5ff0e405fedfca2378cfe089
-                this.to(message.chatId.toString()).emit("newMessages", [message]);
+                console.log(message.chat) //5ff0e405fedfca2378cfe089
+                this.to(message.chat.toString()).emit("newMessages", [message]);
             });
         }
     });
@@ -34,10 +34,10 @@ function messageHandler(socket, next) {
 
 function validateMessage(message) {
     let schema = Joi.object({
-        chatId: Joi.string().required(),
+        chat: Joi.string().required(),
         text: Joi.string().required(),
-        textHash: Joi.string().required(),
-        replyTo : Joi.string(),
+        hash: Joi.string().required(),
+        reply : Joi.string(),
     });
 
     return schema.validate(message)
@@ -46,7 +46,7 @@ function validateMessage(message) {
 function validateGetMessagesQuery(query) {
 
     let schema = Joi.object({
-        chatId: Joi.string().required(),
+        chat: Joi.string().required(),
     });
 
     return schema.validate(query)

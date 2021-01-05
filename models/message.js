@@ -7,40 +7,24 @@ const schema = new mongoose.Schema(
             type: mongoose.Schema.Types.ObjectId,
             ref: 'User'
         },
-        chatId :{
+        chat :{
             type: mongoose.Schema.Types.ObjectId,
             ref : "Chat"
         },
-        replyTo :{
+        reply :{
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Message'
-        },
-        type :{
-            type: String,
-            default : MESSAGE_TYPE.TEXT,
-            maxlength : 64
         },
         text: {
             type: String,
         },
-        textHash: {
+        hash: {
             type: String,
             maxlength : 128
         },
-        content : {
-            type: String,
-        },
-        contentName  : {
-            type: String,
-            maxlength : 64
-        },
-        contentType  : {
-            type: String,
-            maxlength : 64
-        },
-        contentSize  : {
-            type: Number,
-            maxlength : 20
+        file :{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'File'
         },
 
     },
@@ -53,6 +37,7 @@ schema.set('toJSON', {
     transform: function (doc, ret) {
         // remove these props when object is serialized
         delete ret.updatedAt
+        delete ret._id
     }
 });
 

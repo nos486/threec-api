@@ -2,7 +2,7 @@ const express = require("express");
 const Joi = require("joi");
 const {validateRequest,captcha,authorize} = require("../../middleware");
 const {userController} = require("./../../controller")
-const {ROLE} = require("./../../db")
+const {ROLE} = require("./../../models")
 const router = express.Router();
 
 router.get('/:username', authorize() ,getById);

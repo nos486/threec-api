@@ -1,5 +1,5 @@
 const config = require("./../config")
-const db = require('./../db')
+const models = require('./../models')
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
@@ -8,5 +8,5 @@ module.exports = {
 }
 
 async function getUserChats(userId){
-    return await db.Chat.getUserChatsById(userId)
+    return await models.Chat.getUserChatsById(userId)
 }

@@ -1,6 +1,6 @@
 const express =require( "express");
 const {authorize} = require("../../middleware");
-const {Chat,CHAT_TYPE,User} = require("./../../db")
+const {Chat,CHAT_TYPE,User} = require("./../../models")
 const {userController} = require("../../controller");
 
 const router = express.Router();

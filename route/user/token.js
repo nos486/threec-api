@@ -1,6 +1,6 @@
 const express =require( "express");
 const router = express.Router();
-const {ROLE} = require("./../../db")
+const {ROLE} = require("./../../models")
 const Joi = require("joi");
 
 
