@@ -7,7 +7,7 @@ const schema = new mongoose.Schema(
             type: mongoose.Schema.Types.ObjectId,
             ref: 'User'
         },
-        chat :{
+        chatId :{
             type: mongoose.Schema.Types.ObjectId,
             ref : "Chat"
         },

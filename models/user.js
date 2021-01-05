@@ -78,7 +78,7 @@ const User = mongoose.model('User', schema);
 
 
 User.getUserById  = async function(id, fullDetails = false) {
-    if (!User.isValidId(id)) throw 'User not found';
+    if (! mongoose.Types.ObjectId.isValid(id)) throw 'User not found';
     const user = await User.findById(id);
     if (!user) throw 'User not found';
     return fullDetails ? user : basicDetails(user);

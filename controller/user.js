@@ -10,6 +10,7 @@ module.exports = {
     refreshToken,
     deleteRefreshToken,
     getAll,
+    getUser
 }
 
 async function createUser(username, email, password){
@@ -96,5 +97,9 @@ function generateRefreshToken(user, ipAddress) {
         expires: new Date(Date.now() + 7*24*60*60*1000),
         createdByIp: ipAddress
     });
+}
+
+async function getUser(userId) {
+    return await db.User.getUserById(userId)
 }
 

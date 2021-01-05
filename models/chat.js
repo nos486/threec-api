@@ -57,5 +57,11 @@ Chat.getUserChatsById  = async function(userId) {
     return chats;
 }
 
+Chat.isUserHasChat  = async function(userId,chatId) {
+    if (!mongoose.Types.ObjectId.isValid(userId)) throw 'Not valid userId';
+    const chat = await Chat.findOne({_id:chatId,users: userId});
+    return !!chat;
+}
+
 
 module.exports = Chat;

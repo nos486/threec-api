@@ -1,19 +1,34 @@
 const {messageController} = require("./../controller")
 const Joi = require("joi")
 
-function chatHandler(socket, next) {
-    socket.on("newMessage",(message)=>{
-        let {error,value} = validateMessage(message)
+function messageHandler(socket, next) {
+    socket.on("getMessages",(query)=>{
 
-        if(error){
-            next(error)
+        let {error, value} = validateGetMessagesQuery({...query});
+
+        if (error) {
+            next(error);
         }else {
-            messageController.newMessage({userId: socket.userId, ...value}).then((message)=>{
-                socket.emit("newMessage",message)
-            })
+            messageController.getMessages(socket.userId, value.chatId).then((messages) => {
+                socket.emit("newMessages", messages);
+            });
         }
 
     })
+
+    socket.on("newMessage", (message) => {
+        let {error, value} = validateMessage({...message});
+
+        if(error){
+            next(error);
+        }else {
+            messageController.newMessage({author: socket.userId, ...value}).then((message) => {
+                console.log(message.chatId) //5ff0e405fedfca2378cfe089
+                this.to(message.chatId.toString()).emit("newMessages", [message]);
+            });
+        }
+    });
+
     next()
 }
 
@@ -28,4 +43,13 @@ function validateMessage(message) {
     return schema.validate(message)
 }
 
-module.exports = chatHandler;
+function validateGetMessagesQuery(query) {
+
+    let schema = Joi.object({
+        chatId: Joi.string().required(),
+    });
+
+    return schema.validate(query)
+}
+
+module.exports = messageHandler;
