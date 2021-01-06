@@ -1,6 +1,7 @@
 const express = require("express");
 const Joi = require("joi");
 const multer = require("multer");
+const path = require('path');
 const {validateRequest,captcha,authorize} = require("../middleware");
 const {userController} = require("./../controller")
 const {ROLE} = require("./../models")
@@ -12,7 +13,7 @@ const {messageSchema} = require("./../helper/validateSchemas")
 const uploadController = multer({ dest: 'uploads/' })
 
 
-// router.get('/file', authorize() ,uploadController.single('content') ,upload);
+router.get('/:messageId/file',authorize(), getMessageFile);
 router.post('/', authorize() ,uploadController.single('file') ,newMessageValidate,newMessage);
 
 module.exports =  router;
@@ -37,13 +38,38 @@ async function newMessage(req, res, next) {
         jsonMessage.file = file._id
     }
 
-    let message = await messageController.newMessage({...jsonMessage, ...req.body})
+    await messageController.newMessage({...jsonMessage, ...req.body}).then((message)=>{
 
-    if(req.file){
-        message.file = file
-    }
-    socket.io.to(message.chat.toString()).emit("newMessages", [message]);
+        if(req.file){
+            message.file = file
+        }
+        socket.io.to(message.chat.toString()).emit("newMessages", [message]);
 
-    res.send("ok")
+        res.send("ok")
+    }).catch(next)
 }
 
+async function getMessageFile(req, res, next) {
+    messageController.getMessage(req.user.id,req.params.messageId).then((message)=>{
+        if(!message.file) throw "File not find"
+
+        let options = {
+            root: path.join("")
+        };
+
+        res.sendFile(message.file.path,options, function (err) {
+            if (err) {
+                next(err)
+            }
+        })
+    }).catch(next)
+}
+
+async function deleteMessageFile(req, res, next) {
+
+}
+
+
+async function deleteMessage(req, res, next) {
+
+}

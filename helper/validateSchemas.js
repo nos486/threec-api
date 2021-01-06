@@ -1,4 +1,6 @@
 const Joi = require("joi")
+Joi.objectId = require('joi-objectid')(Joi)
+
 
 module.exports = {
     messageSchema : Joi.object({
@@ -11,6 +13,10 @@ module.exports = {
         fileHash: Joi.string().max(64),
         fileType: Joi.string().max(64),
         fileSize: Joi.number(),
+    }),
+
+    deleteMessageSchema : Joi.object({
+        messageId : Joi.objectId()
     })
 }
 

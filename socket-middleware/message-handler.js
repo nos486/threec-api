@@ -1,4 +1,5 @@
-const {messageController} = require("./../controller")
+const {messageController,fileController} = require("./../controller")
+const {deleteMessageSchema} = require("./../helper/validateSchemas")
 const Joi = require("joi")
 
 function messageHandler(socket, next) {
@@ -13,7 +14,6 @@ function messageHandler(socket, next) {
                 socket.emit("newMessages", messages);
             });
         }
-
     })
 
     socket.on("newMessage", (message) => {
@@ -28,6 +28,23 @@ function messageHandler(socket, next) {
             });
         }
     });
+
+    socket.on("deleteMessage", (messageId) => {
+        let {error, value} = deleteMessageSchema.validate({messageId});
+
+        if(error){
+            next(error);
+        }else {
+            messageController.deleteMessage(socket.userId,messageId).then((message)=>{
+                if(message.file) fileController.deleteFile(message.file._id).then((file)=>{
+                    console.log(file)
+                }).catch(next)
+
+                this.to(message.chat._id.toString()).emit("deleteMessage", {id:message.id,chat:message.chat._id.toString()});
+            }).catch(next)
+        }
+    });
+
 
     next()
 }
