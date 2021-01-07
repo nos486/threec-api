@@ -27,7 +27,7 @@ async function newMessage({author,chat,reply,text,hash,file}){
 
 async function getMessages(userId,chatId){
     if(! await models.Chat.isUserHasChat(userId,chatId)) throw "Chat not find"
-    let messages = await models.Message.find({chat:chatId}).populate('file')
+    let messages = await models.Message.find({chat:chatId}).populate('file').populate('reply')
     return messages
 }
 

@@ -23,7 +23,6 @@ function messageHandler(socket, next) {
             next(error);
         }else {
             messageController.newMessage({author: socket.userId, ...value}).then((message) => {
-                console.log(message.chat) //5ff0e405fedfca2378cfe089
                 this.to(message.chat.toString()).emit("newMessages", [message]);
             });
         }
