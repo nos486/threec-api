@@ -50,7 +50,7 @@ async function newMessage(req, res, next) {
 }
 
 async function getMessageFile(req, res, next) {
-    messageController.getMessage(req.user.id,req.params.messageId).then((message)=>{
+    messageController.getMessageCheckUser(req.user.id,req.params.messageId).then((message)=>{
         if(!message.file) throw "File not find"
 
         let options = {

@@ -23,7 +23,10 @@ function messageHandler(socket, next) {
             next(error);
         }else {
             messageController.newMessage({author: socket.userId, ...value}).then((message) => {
-                this.to(message.chat.toString()).emit("newMessages", [message]);
+                //get for populate data
+                messageController.getMessage(message._id).then((message)=>{
+                    socket.emit("newMessages", [message]);
+                })
             });
         }
     });
