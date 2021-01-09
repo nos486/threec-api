@@ -12,6 +12,7 @@ function authorize(roles = []) {
     }
 
     return [
+
         // authenticate JWT token and attach user to request object (req.user)
         jwt({ secret, algorithms: ['HS256'] }),
 
@@ -25,8 +26,8 @@ function authorize(roles = []) {
 
             req.user = user
             const refreshTokens = await models.RefreshToken.find({ user: user.id });
-            req.user.ownsToken = token => !!refreshTokens.find(x => x.token === token);
             next();
         }
+
     ];
 }

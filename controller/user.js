@@ -10,10 +10,13 @@ module.exports = {
     refreshToken,
     deleteRefreshToken,
     getAll,
-    getUser
+    getUser,
+    getUserByUsername
 }
 
 async function createUser(username, email, password){
+    username = username.toLowerCase()
+
     if (await models.User.hasUsername(username)){
         throw "Username exist"
     }
@@ -33,6 +36,8 @@ async function createUser(username, email, password){
 }
 
 async function authenticate({ username, password, ipAddress }) {
+    username = username.toLowerCase()
+
     const user = await models.User.findOne({ username });
 
     if (!user || !bcrypt.compareSync(password, user.password)) {
@@ -86,7 +91,8 @@ async function getAll() {
 
 function generateJwtToken(user) {
     // create a jwt token containing the user id that expires in 15 minutes
-    return jwt.sign({ id: user.id }, secret, { expiresIn: '15m' });
+    //todo change expiresIn
+    return jwt.sign({ id: user.id }, secret, { expiresIn: '15d' });
 }
 
 function generateRefreshToken(user, ipAddress) {
@@ -101,5 +107,14 @@ function generateRefreshToken(user, ipAddress) {
 
 async function getUser(userId) {
     return await models.User.getUserById(userId)
+}
+
+
+async function getUserByUsername(username) {
+    username = username.toLowerCase()
+
+    const user = await models.User.findOne({username});
+    if (!user) throw 'User not found';
+    return user
 }
 

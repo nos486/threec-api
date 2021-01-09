@@ -7,7 +7,6 @@ const mongoose =require( 'mongoose');
 module.exports = {
     newMessage,
     getMessages,
-    getMessageCheckUser,
     getMessage,
     deleteMessage
 }
@@ -23,7 +22,10 @@ async function newMessage({author,chat,reply,text,hash,file}){
         file
     })
 
-    return await message.save()
+    await message.save()
+
+    message = await models.Message.findOne({_id:message._id}).populate('file').populate({ path:'reply',populate: {path: "file"}})
+    return message
 }
 
 async function getMessages(userId,chatId){
@@ -32,22 +34,14 @@ async function getMessages(userId,chatId){
     return messages
 }
 
-async function getMessageCheckUser(userId,messageId){
+async function getMessage(userId,messageId){
     if(!models.isValidId(messageId)) throw "Id not valid"
 
-    let message = await models.Message.findOne({_id:messageId}).populate('file')
+    let message = await models.Message.findOne({_id:messageId}).populate('file').populate({ path:'reply',populate: {path: "file"}})
     if(!message)  throw "Message not find"
 
     let chat = await models.Chat.findOne({_id:message.chat,users: userId})
     if(!chat)  throw "Chat not find"
-
-    return message
-}
-
-async function getMessage(messageId){
-
-    let message = await models.Message.findOne({_id:messageId}).populate('file').populate('reply');
-    if(!message)  throw "Message not find"
 
     return message
 }

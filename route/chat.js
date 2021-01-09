@@ -7,7 +7,7 @@ const {ROLE} = require("./../models")
 const router = express.Router();
 const socket = require("./../socket")
 
-const uploadController = multer({ dest: 'uploads/' })
+const uploadController = multer({ dest: 'public/uploads/' })
 
 
 // router.get('/file', authorize() ,uploadController.single('content') ,upload);

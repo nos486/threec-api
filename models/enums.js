@@ -13,5 +13,9 @@ module.exports = {
         PICTURE: "Picture",
         VIDEO: "Video",
         FILE: "File"
+    },
+    GENDER:{
+        MALE:"Male",
+        FEMALE:"Female"
     }
 };

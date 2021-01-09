@@ -56,6 +56,12 @@ const schema = new mongoose.Schema(
         lastName: {
             type: String,
         },
+        gender :{
+            type: String,
+        },
+        avatarPath :{
+            type: String,
+        },
         about :{
             type : String,
         }
@@ -71,6 +77,7 @@ schema.set('toJSON', {
         delete ret._id;
         delete ret.updatedAt
         delete ret.password;
+        delete ret.avatarPath;
     }
 });
 

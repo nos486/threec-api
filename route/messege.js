@@ -10,7 +10,7 @@ const socket = require("./../socket")
 const {messageController,fileController} = require("../controller/");
 const {messageSchema} = require("./../helper/validateSchemas")
 
-const uploadController = multer({ dest: 'uploads/' })
+const uploadController = multer({ dest: 'public/uploads/' })
 
 
 router.get('/:messageId/file',authorize(), getMessageFile);
@@ -50,7 +50,7 @@ async function newMessage(req, res, next) {
 }
 
 async function getMessageFile(req, res, next) {
-    messageController.getMessageCheckUser(req.user.id,req.params.messageId).then((message)=>{
+    messageController.getMessage(req.user.id,req.params.messageId).then((message)=>{
         if(!message.file) throw "File not find"
 
         let options = {
