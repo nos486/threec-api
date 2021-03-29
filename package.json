@@ -4,8 +4,8 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "start": "nodemon server.js -e ejs,js,css,html,jpg,png,scss",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node server.js",
+    "serve": "nodemon server.js -e ejs,js,css,html,jpg,png,scss"
   },
   "author": "",
   "license": "ISC",
