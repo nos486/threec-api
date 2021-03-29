@@ -8,8 +8,8 @@ const {captcha,authorize, validateRequest} = require("../../middleware");
 const {userController} = require("../../controller");
 
 
-// router.post('/',authenticateSchema,captcha.check,authenticate);
-router.post('/',authenticate);
+router.post('/',authenticateSchema,captcha.check,authenticate);
+// router.post('/',authenticate);
 router.post('/refresh',refreshTokenSchema, refreshToken);
 router.post('/revoke', authorize(), revokeTokenSchema, revokeToken);
 
@@ -23,6 +23,7 @@ function authenticateSchema(req, res, next) {
         captchaKey : Joi.string().required().uuid(),
         captcha : Joi.string().required().length(4),
     });
+    console.log(req.body)
     validateRequest(req, next, schema);
 }
 

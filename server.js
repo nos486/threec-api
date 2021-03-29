@@ -5,6 +5,6 @@ const socket =require("./socket")
 const port = 3000
 
 const server = app.listen(port, () => {
-    console.log(`Example app listening at http://localhost:${port}`)
+    console.log(`Example app listening at http://0.0.0.0:${port}`)
      socket.initSocket(server)
 })
