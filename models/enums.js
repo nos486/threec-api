@@ -1,21 +1,22 @@
 module.exports = {
     ROLE: {
-        ADMIN: 'Admin',
-        USER: 'User'
+        ADMIN: 'admin',
+        USER: 'user'
     },
     CHAT_TYPE: {
-        PRIVATE: "Private",
-        GROUP: "Group"
+        PRIVATE: "private",
+        GROUP: "group"
     },
     MESSAGE_TYPE: {
-        TEXT: "Text",
-        VOICE: "Voice",
-        PICTURE: "Picture",
-        VIDEO: "Video",
-        FILE: "File"
+        TEXT: "text",
+        VOICE: "voice",
+        PICTURE: "picture",
+        VIDEO: "video",
+        FILE: "file"
     },
     GENDER:{
-        MALE:"Male",
-        FEMALE:"Female"
+        MALE:"male",
+        FEMALE:"female",
+        NONE:"none"
     }
 };

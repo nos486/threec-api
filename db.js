@@ -8,7 +8,9 @@ const connectionOptions = {
     useUnifiedTopology: true,
     useFindAndModify: false
 };
-mongoose.connect(process.env.MONGODB_URI || "mongodb+srv://threec:grGSH2DFBAeS5UGQ@3c.aeebm.mongodb.net/myFirstDatabase?retryWrites=true&w=majority", connectionOptions).then(async () => {
+
+// mongoose.connect(process.env.MONGODB_URI || "mongodb+srv://threec:grGSH2DFBAeS5UGQ@3c.aeebm.mongodb.net/myFirstDatabase?retryWrites=true&w=majority", connectionOptions).then(async () => {
+mongoose.connect(process.env.MONGODB_URI || "mongodb://127.0.0.1/apiService", connectionOptions).then(async () => {
     console.log(`db connected`);
 
     //create global chat
