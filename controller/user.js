@@ -10,7 +10,7 @@ module.exports = {
     refreshToken,
     deleteRefreshToken,
     getAll,
-    getUser,
+    getUserById,
     getUserByUsername
 }
 
@@ -105,16 +105,14 @@ function generateRefreshToken(user, ipAddress) {
     });
 }
 
-async function getUser(userId) {
-    return await models.User.getUserById(userId)
+
+async function getUserById(userId,fullDetails = false) {
+    return await models.User.getUserById(userId,fullDetails);
 }
 
 
-async function getUserByUsername(username) {
+async function getUserByUsername(username,fullDetails = false) {
     username = username.toLowerCase()
-
-    const user = await models.User.findOne({username});
-    if (!user) throw 'User not found';
-    return user
+    return await models.User.getUserByUsername(username,fullDetails);
 }
 

@@ -10,7 +10,7 @@ function userHandler(socket, next) {
         if (error) {
             next(error);
         }else {
-            userController.getUser(userId).then((user)=>{
+            userController.getUserById(userId).then((user)=>{
                 socket.emit("newUser", user);
             })
         }

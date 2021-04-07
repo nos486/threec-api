@@ -3,7 +3,6 @@ const Joi = require("joi");
 const {userController} =require ("./../../controller");
 const {authorize,captcha,validateRequest} =require ("./../../middleware");
 
-
 const router = express.Router();
 
 

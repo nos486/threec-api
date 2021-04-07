@@ -8,12 +8,14 @@ const router = express.Router();
 const token =require( "./token");
 const register =require( "./register");
 const profile =require( "./profile");
+const avatar = require("./avatar")
+const path = require("path");
 const {ROLE} = require("../../models/enums");
 
 // router.get('/', authorize(ROLE.ADMIN), getAll);
 router.get('/', authorize(),getOwnUser);
 router.get('/:username',authorize(), getUserProfileByUsername);
-router.get('/:username/avatar',authorize(), getUserAvatarByUsername);
+router.use('/avatar',avatar);
 router.use("/token",token)
 router.use("/register",register)
 router.use("/profile",profile)
@@ -43,20 +45,6 @@ function getUserProfileByUsername(req, res, next) {
     }).catch(next);
 }
 
-function getUserAvatarByUsername(req, res, next) {
-    userController.getUserByUsername(req.params.username).then((user) =>{
-
-        let options = {
-            root: path.join("")
-        };
-
-        res.sendFile(user.avatarPath,options, function (err) {
-            if (err) {
-                next(err)
-            }
-        })
-    }).catch(next);
-}
 
 
 //helpers

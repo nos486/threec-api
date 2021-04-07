@@ -8,8 +8,8 @@ const {captcha,authorize, validateRequest} = require("../../middleware");
 const {userController} = require("../../controller");
 
 
-router.post('/',authenticateSchema,captcha.check,authenticate);
-// router.post('/',authenticate);
+// router.post('/',authenticateSchema,captcha.check,authenticate);
+router.post('/',authenticate);
 router.post('/refresh',refreshTokenSchema, refreshToken);
 router.post('/revoke', authorize(), revokeTokenSchema, revokeToken);
 
