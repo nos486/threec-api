@@ -31,19 +31,17 @@ function messageHandler(socket, next) {
     socket.on("deleteMessage", (messageId) => {
         let {error, value} = deleteMessageSchema.validate({messageId});
 
+
         if(error){
             next(error);
         }else {
             messageController.deleteMessage(socket.userId,messageId).then((message)=>{
-                if(message.file) fileController.deleteFile(message.file._id).then((file)=>{
-                    console.log(file)
-                }).catch(next)
+
 
                 this.to(message.chat._id.toString()).emit("deleteMessage", {id:message.id,chat:message.chat._id.toString()});
             }).catch(next)
         }
     });
-
 
     next()
 }

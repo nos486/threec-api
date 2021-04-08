@@ -3,6 +3,7 @@ const models = require('./../models')
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const mongoose =require( 'mongoose');
+const {fileController} = require(".")
 
 module.exports = {
     newMessage,
@@ -46,7 +47,7 @@ async function getMessage(userId,messageId){
     return message
 }
 
-async function deleteMessage(userId, messageId) {
+async function deleteMessagePersistent(userId, messageId) {
     if (!models.isValidId(messageId)) throw "Id not valid";
 
     let message = await models.Message.findById(messageId).populate('file').populate('chat');
@@ -55,6 +56,23 @@ async function deleteMessage(userId, messageId) {
     if (!(message.author.toString() === userId || message.chat.admin.toString() === userId)) throw "Permission denied";
     await message.remove();
 
+    return message;
+}
+
+async function deleteMessage(userId, messageId) {
+    if (!models.isValidId(messageId)) throw "Id not valid";
+
+    let message = await models.Message.findById(messageId).populate('file').populate('chat');
+    if (!message) throw "Message not find";
+
+    if (!(message.author.toString() === userId || message.chat.admin.toString() === userId)) throw "Permission denied";
+    message.isDeleted = true
+    message.text = ""
+    if(message.file) fileController.deleteFile(message.file._id).then((file)=>{
+        console.log(file)
+    }).catch(next)
+
+    message.save();
     return message;
 }
 

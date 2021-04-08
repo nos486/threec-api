@@ -26,6 +26,10 @@ const schema = new mongoose.Schema(
             type: mongoose.Schema.Types.ObjectId,
             ref: 'File'
         },
+        isDeleted : {
+            type : Boolean,
+            default : false
+        }
 
     },
     { timestamps: true },
